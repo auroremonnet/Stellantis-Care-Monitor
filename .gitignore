@@ -1,0 +1,35 @@
+# --- Environnements Virtuels (TRES IMPORTANT) ---
+# On ignore toutes les variantes possibles pour être sûr
+.venv/
+venv/
+env/
+.env
+venv_stellantis/
+
+# --- Python Cache ---
+__pycache__/
+*.py[cod]
+
+# --- Fichiers Systèmes ---
+.DS_Store
+Thumbs.db
+
+# --- Médias (Vidéos de test) ---
+*.mp4
+*.avi
+*.mov
+*.mkv
+
+# --- Images ---
+# On ignore les images sauvages, mais on garde le logo
+*.jpg
+*.jpeg
+*.png
+!logo.png
+
+# --- Modèles IA ---
+# Si ton fichier .pt fait > 100Mo, décommente la ligne dessous (enlève le #)
+# *.pt
+
+# --- Dossiers Node ---
+node_modules/
