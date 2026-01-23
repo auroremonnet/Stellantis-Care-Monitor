@@ -126,7 +126,7 @@ class StellantisUltimateSystem:
         st = self.hud_data["global_state"]
         if st == "INCONFORT":
             self.target_temp = 18.0
-            self.climate_mode = "AC MAX"
+            self.climate_mode = "MODE MAX"
         elif st == "CONFORT":
             self.target_temp = 21.0
             self.climate_mode = "ECO"

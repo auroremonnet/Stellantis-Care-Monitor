@@ -137,7 +137,7 @@ class VLMAnalyzer:
         response = self.processor.batch_decode(out_ids, skip_special_tokens=True)[0]
         
         # Debug dans la console pour vous prouver que l'IA réfléchit
-        print("\n--- ANALYSE IA BRUTE ---")
+        print("\n--- ANALYSE BRUTE ---")
         print(response)
         print("------------------------\n")
         
