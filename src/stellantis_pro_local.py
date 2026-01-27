@@ -5,6 +5,10 @@ import sys
 import os
 from collections import Counter
 
+# --- IMPORT MODULE DE VALIDATION ---
+from data_logger import ValidationLogger 
+# -----------------------------------
+
 # --- IMPORTS MODULES LOCAUX ---
 try:
     from detection import FaceRegionDetector
@@ -56,6 +60,13 @@ class StellantisUltimateSystem:
         self.cnn_engine = EmotionCNNAnalyzer("models/emotion_resnet18_affectnet.pt")
         self.cloth_engine = ClothingAnalyzer()
         
+        # --- INITIALISATION LOGGER ---
+        print("[SYSTEM] Démarrage du Module de Validation...")
+        # Attention : Assure-toi d'avoir supprimé l'ancien 'session_data.csv' avant de relancer
+        self.logger = ValidationLogger("session_data.csv")
+        self.prev_frame_time = 0
+        # -----------------------------
+
         # Logo
         self.logo_img = None
         if os.path.exists("logo.png"):
@@ -439,6 +450,32 @@ class StellantisUltimateSystem:
                         self.hud_data["global_state"] = final
                         self.update_history_30s(final)
                         self.update_climate()
+
+                        # --- AJOUT LOGGING (POUR RAPPORT) ---
+                        new_frame_time = time.time()
+                        fps = 1 / (new_frame_time - self.prev_frame_time) if self.prev_frame_time > 0 else 0
+                        self.prev_frame_time = new_frame_time
+                        
+                        s_cnn_val = cnn_res["score"] if cnn_res["label"] == "happy" else -cnn_res["score"]
+                        s_geo_val = total - s_cnn_val # On déduit le reste
+
+                        # Extraction des causes anatomiques (Pour l'onglet Causalité)
+                        d_eyes = geo_res.get("txt_eyes", "Neutre")
+                        d_brows = geo_res.get("txt_brows", "Stable")
+                        d_mouth = geo_res.get("txt_mouth", "Fermee")
+
+                        self.logger.log_frame(
+                            state=final,
+                            total_score=total,
+                            geo_score=s_geo_val,
+                            cnn_score=s_cnn_val,
+                            temp=self.current_temp,
+                            fps=fps,
+                            eyes=d_eyes,
+                            brows=d_brows,
+                            mouth=d_mouth
+                        )
+                        # ------------------------------------
 
                         col = C_OK if final == "CONFORT" else (C_ALERT if final == "INCONFORT" else C_NEUTRAL)
                         cv2.rectangle(frame, (x1,y1), (x2,y2), col, 2)
