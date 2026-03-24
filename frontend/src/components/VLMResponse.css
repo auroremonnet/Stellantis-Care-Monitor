@@ -1,0 +1,45 @@
+.vlm-response {
+  width: 100%;
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 32px;
+  background: linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%);
+  border: 1px solid #e0e0e0;
+  border-radius: 24px;
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.08),
+    0 2px 8px rgba(0, 0, 0, 0.04);
+  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.vlm-response::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: #000000;
+}
+
+.vlm-question {
+  color: #1a1a1a;
+  font-size: 18px;
+  text-align: center;
+  margin: 0;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -18,13 +18,6 @@ except ImportError as e:
     print(f"[ERREUR CRITIQUE] Manque un fichier : {e}")
     sys.exit(1)
 
-# Gestion Son
-try:
-    import winsound
-    HAS_SOUND = True
-except ImportError:
-    HAS_SOUND = False
-
 # Gestion Vêtements (Optionnel)
 try:
     from clothing_analysis import ClothingAnalyzer
@@ -44,7 +37,7 @@ C_FOOTER_BG = (240, 240, 240)
 # Couleurs Sémantiques
 C_OK = (80, 200, 80)        # Vert (Confort)
 C_WARN = (0, 165, 255)      # Orange (Attention)
-C_ALERT = (50, 50, 220)     # Rouge (Inconfort / Somnolence)
+C_ALERT = (50, 50, 220)     # Rouge (Inconfort)
 C_NEUTRAL = (160, 160, 160) # Gris (Neutre)
 
 FONT_MAIN = cv2.FONT_HERSHEY_SIMPLEX
@@ -62,7 +55,6 @@ class StellantisUltimateSystem:
         
         # --- INITIALISATION LOGGER ---
         print("[SYSTEM] Démarrage du Module de Validation...")
-        # Attention : Assure-toi d'avoir supprimé l'ancien 'session_data.csv' avant de relancer
         self.logger = ValidationLogger("session_data.csv")
         self.prev_frame_time = 0
         # -----------------------------
@@ -87,11 +79,7 @@ class StellantisUltimateSystem:
         self.current_temp = 21.0
         self.climate_mode = "AUTO"
         
-        # 4. Somnolence
-        self.eyes_closed_start = None
-        self.is_drowsy = False
-
-        # 5. VLM MEMORY (Historique 30s)
+        # 4. VLM MEMORY (Historique 30s)
         self.state_history = [] 
         self.stats_percentages = {"CONFORT": 0, "NEUTRE": 0, "INCONFORT": 0}
         
@@ -150,7 +138,7 @@ class StellantisUltimateSystem:
 
     def fusion_intelligence(self, geo, cnn_label, cnn_score, clothes_list):
         """
-        Algorithme de fusion multi-modale.
+        Algorithme de fusion multi-modale (Focalisé sur le Confort Thermique).
         """
         s_geo = 0.0
         s_cnn = 0.0
@@ -160,16 +148,7 @@ class StellantisUltimateSystem:
         txt_eyes = geo.get("txt_eyes", "")
         txt_brows = geo.get("txt_brows", "")
         
-        # --- 1. DETECTION SOMNOLENCE (SECURITE) ---
-        is_eyes_closed = "Plisses" in txt_eyes and "Sourire" not in txt_mouth
-        if is_eyes_closed:
-            if self.eyes_closed_start is None: self.eyes_closed_start = time.time()
-            elif (time.time() - self.eyes_closed_start) > 1.5: self.is_drowsy = True
-        else:
-            self.eyes_closed_start = None
-            self.is_drowsy = False
-
-        # --- 2. CALCUL DES SCORES (CONFORT/INCONFORT) ---
+        # --- 1. CALCUL DES SCORES (CONFORT/INCONFORT) ---
         
         # A. Géométrie (Poids forts)
         if "Sourire" in txt_mouth: 
@@ -198,10 +177,8 @@ class StellantisUltimateSystem:
 
         total_score = s_geo + s_cnn + s_cloth
 
-        # --- 3. DECISION FINALE ---
-        if self.is_drowsy: 
-            final_state = "SOMNOLENCE"
-        elif total_score >= 4.5: 
+        # --- 2. DECISION FINALE ---
+        if total_score >= 4.5: 
             final_state = "CONFORT"
         elif total_score <= -4.0: 
             final_state = "INCONFORT"
@@ -227,21 +204,6 @@ class StellantisUltimateSystem:
 
     def draw_ui_pro(self, img):
         h, w = img.shape[:2]
-        
-        # ALERTE SOMNOLENCE
-        if self.is_drowsy:
-            if int(time.time() * 10) % 2 == 0: # Clignotement
-                overlay = img.copy()
-                cv2.rectangle(overlay, (0,0), (w,h), (0,0,255), -1)
-                cv2.addWeighted(overlay, 0.3, img, 0.7, 0, img)
-            
-            txt = "!!! ALERTE SOMNOLENCE !!!"
-            sz = cv2.getTextSize(txt, FONT_BOLD, 1.5, 3)[0]
-            cx = (w - sz[0]) // 2
-            cv2.putText(img, txt, (cx, h//2), FONT_BOLD, 1.5, (0,0,255), 5)
-            cv2.putText(img, txt, (cx, h//2), FONT_BOLD, 1.5, (255,255,255), 2)
-            if HAS_SOUND: winsound.Beep(2000, 100)
-            return
 
         # 1. HEADER
         header_h = 80
@@ -289,7 +251,6 @@ class StellantisUltimateSystem:
             
             # Emotion
             cnn = self.hud_data["cnn_details"]
-            # MODIF: Remplacement de "IMPASSIBLE" par "NEUTRE"
             lbl_display = cnn["label"].upper().replace("HAPPY", "SEREIN").replace("NEUTRAL", "NEUTRE").replace("SAD", "PREOCCUPE")
             
             cv2.putText(img, f"EMOTION: {lbl_display}", (x_p, curr_y), FONT_MAIN, 0.6, C_WHITE, 1)
@@ -308,7 +269,6 @@ class StellantisUltimateSystem:
                 cv2.putText(img, f"Yeux: {geo.get('txt_eyes', '-')}", (x_p, curr_y), FONT_MAIN, 0.5, C_WHITE, 1)
                 curr_y += 25
                 
-                # MODIF: Pas de couleur rouge pour les sourcils froncés (reste Blanc)
                 txt_b = geo.get('txt_brows', '-')
                 col_b = C_WHITE 
                 
