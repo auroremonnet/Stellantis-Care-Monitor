@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+    <html lang="fr">
+    <head>
+    <meta charset="UTF-8">
+    <title>CARE — Rapport thermique</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+    *{margin:0;padding:0;box-sizing:border-box}
+
+    :root{
+    --bg:#f0f2f5;
+    --white:#ffffff;
+    --black:#0a0a0a;
+    --border:#e2e5ea;
+    --text:#1a1d23;
+    --muted:#6b7280;
+    --radius:14px;
+    --shadow:0 2px 16px rgba(0,0,0,.06), 0 1px 4px rgba(0,0,0,.04);
+    }
+
+    body{
+    font-family:'DM Sans',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    }
+
+    .app-header{
+    background:var(--white);
+    border-bottom:1px solid var(--border);
+    padding:0 28px;
+    height:60px;
+    position:sticky;
+    top:0;
+    z-index:100;
+    box-shadow:0 1px 6px rgba(0,0,0,.05);
+    }
+
+    .header-content{
+    max-width:1080px;
+    margin:0 auto;
+    height:100%;
+    display:grid;
+    grid-template-columns:200px 1fr 200px;
+    align-items:center;
+    }
+
+    .logo-space{
+    display:flex;
+    align-items:center;
+    }
+
+    .logo-space img{
+    height:32px;
+    object-fit:contain;
+    }
+
+    .app-title{
+    font-family:'DM Mono',monospace;
+    font-size:18px;
+    font-weight:500;
+    letter-spacing:12px;
+    color:var(--black);
+    text-align:center;
+    }
+
+    .header-right{
+    display:flex;
+    justify-content:flex-end;
+    }
+
+    .hdr-pills{
+    display:flex;
+    gap:8px;
+    align-items:center;
+    }
+
+    .hdr-pill{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:5px 12px;
+    border-radius:20px;
+    background:var(--bg);
+    border:1px solid var(--border);
+    font-family:'DM Mono',monospace;
+    font-size:11px;
+    color:var(--muted);
+    }
+
+    .hdr-pill-dot{
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    flex-shrink:0;
+    background:#dc2626;
+    animation:pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+    0%,100%{opacity:1}
+    50%{opacity:0.4}
+    }
+
+    .hdr-pill-bold{font-weight:600;color:var(--text)}
+    .hdr-pill-sep{color:var(--border)}
+    .hdr-pill-icon{font-size:13px}
+
+    .wrap{
+    max-width:1080px;
+    margin:0 auto;
+    padding:20px 28px 40px;
+    }
+
+    .panel{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:20px 24px;
+    box-shadow:var(--shadow);
+    margin-bottom:16px;
+    }
+
+    .hero{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:18px;
+    min-height:320px;
+    }
+
+    .hero img{
+    width:auto;
+    max-width:100%;
+    max-height:68vh;
+    height:auto;
+    object-fit:contain;
+    border-radius:12px;
+    display:block;
+    margin:0 auto;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+    }
+
+    .title{
+    font-family:'DM Mono',monospace;
+    font-size:11px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    margin-bottom:6px;
+    }
+
+    .sub{
+    font-size:12px;
+    color:var(--muted);
+    margin-bottom:16px;
+    }
+
+    .top{
+    display:grid;
+    grid-template-columns:1.2fr 1fr 1fr;
+    gap:14px;
+    }
+
+    .big{
+    border:2px solid #dc2626;
+    border-radius:12px;
+    padding:18px;
+    background:#fafbfc;
+    }
+
+    .big-label{
+    font-family:'DM Mono',monospace;
+    font-size:10px;
+    color:var(--muted);
+    text-transform:uppercase;
+    }
+
+    .big-value{
+    font-size:28px;
+    font-weight:700;
+    color:#dc2626;
+    margin-top:6px;
+    }
+
+    .big-meta{
+    font-size:13px;
+    color:var(--muted);
+    margin-top:6px;
+    line-height:1.5;
+    }
+
+    .mini{
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:18px;
+    background:#fafbfc;
+    }
+
+    .mini-value{
+    font-family:'DM Mono',monospace;
+    font-size:26px;
+    font-weight:700;
+    margin-top:8px;
+    }
+
+    .summary-box{
+    margin-top:14px;
+    border:1px solid var(--border);
+    border-left:4px solid #dc2626;
+    border-radius:12px;
+    background:#fafbfc;
+    padding:16px 18px;
+    }
+
+    .summary-title{
+    font-size:16px;
+    font-weight:700;
+    color:#dc2626;
+    margin-bottom:8px;
+    }
+
+    .summary-text{
+    font-size:14px;
+    line-height:1.7;
+    color:var(--text);
+    }
+
+    .metrics{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+    }
+
+    .metric-card{
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:#fafbfc;
+    padding:14px;
+    }
+
+    .metric-label{
+    font-family:'DM Mono',monospace;
+    font-size:10px;
+    color:var(--muted);
+    text-transform:uppercase;
+    }
+
+    .metric-value{
+    font-size:22px;
+    font-weight:700;
+    margin-top:8px;
+    }
+
+    .two{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+    }
+
+    .detail-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 0;
+    border-bottom:1px solid var(--border);
+    }
+
+    .detail-row:last-child{border-bottom:none}
+
+    .detail-name{font-size:14px}
+
+    .detail-value{
+    font-family:'DM Mono',monospace;
+    font-size:14px;
+    font-weight:700;
+    color:#dc2626;
+    }
+
+    .bar{
+    display:grid;
+    grid-template-columns:1fr 2fr 1fr;
+    height:28px;
+    border-radius:6px;
+    overflow:hidden;
+    border:1px solid var(--border);
+    margin-top:12px;
+    }
+
+    .zone{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'DM Mono',monospace;
+    font-size:9px;
+    font-weight:700;
+    text-align:center;
+    }
+
+    .bad{background:#fee2e2;color:#dc2626}
+    .neutral{background:#f3f4f6;color:#6b7280}
+    .good{background:#dcfce7;color:#16a34a}
+
+    .cursor-wrap{
+    position:relative;
+    height:12px;
+    margin-top:4px;
+    }
+
+    .cursor{
+    position:absolute;
+    left:31.0%;
+    transform:translateX(-50%);
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    border:2px solid #fff;
+    background:#dc2626;
+    box-shadow:0 1px 4px rgba(0,0,0,.25);
+    }
+
+    ul{
+    padding-left:20px;
+    line-height:1.8;
+    }
+
+    @media (max-width:900px){
+    .header-content{grid-template-columns:1fr;gap:8px;padding:10px 0;height:auto}
+    .app-header{height:auto;padding:12px 18px}
+    .top,.metrics,.two{grid-template-columns:1fr}
+    }
+    </style>
+    </head>
+    <body>
+    <header class="app-header">
+    <div class="header-content">
+        <div class="logo-space">
+        <img src="Stellantis.png" alt="Stellantis">
+        </div>
+        <h1 class="app-title">CARE</h1>
+        <div class="header-right">
+        <div class="hdr-pills">
+            <div class="hdr-pill">
+            <span class="hdr-pill-dot"></span>
+            <span>Caméra thermique</span>
+            </div>
+            <div class="hdr-pill">
+            <span class="hdr-pill-icon">🌡️</span>
+            <span class="hdr-pill-bold">-1.90</span>
+            <span class="hdr-pill-sep">·</span>
+            <span>INCONFORT</span>
+            </div>
+        </div>
+        </div>
+    </div>
+    </header>
+
+    <div class="wrap">
+    <div class="panel hero">
+        <img src="image_test3_thermal_analysis.jpg" alt="Analyse thermique">
+    </div>
+
+    <div class="panel">
+        <div class="title">Fusion et résultat</div>
+        <div class="sub">Décision thermique globale sur l’image analysée</div>
+
+        <div class="top">
+        <div class="big">
+            <div class="big-label">Verdict</div>
+            <div class="big-value">INCONFORT</div>
+            <div class="big-meta">Direction : froid<br>Action : Augmenter légèrement la température ou réduire le flux d'air froid.</div>
+        </div>
+        <div class="mini">
+            <div class="big-label">Score global</div>
+            <div class="mini-value">-1.90</div>
+        </div>
+        <div class="mini">
+            <div class="big-label">Confiance</div>
+            <div class="mini-value">0.70</div>
+        </div>
+        </div>
+
+        <div class="summary-box">
+        <div class="summary-title">Résumé IA — inconfort thermique à tendance froide</div>
+        <div class="summary-text">Le système détecte un profil compatible avec un inconfort froid. Le nez (29.8°C) apparaît relativement plus froid que les zones de référence, notamment le front (30.4°C) et le canthus moyen (31.0°C). Les gradients thermiques faciaux contribuent négativement au score (front/nez +0.00, canthus/nez +0.00), ce qui suggère un refroidissement périphérique du visage. La situation justifie une correction thermique vers plus de chaleur.</div>
+        </div>
+
+        <div class="bar">
+        <div class="zone bad">INCONFORT</div>
+        <div class="zone neutral">NEUTRE</div>
+        <div class="zone good">CONFORT</div>
+        </div>
+        <div class="cursor-wrap"><div class="cursor"></div></div>
+    </div>
+
+    <div class="panel">
+        <div class="title">Températures essentielles</div>
+        <div class="sub">Zones les plus utiles pour la décision thermique</div>
+        <div class="metrics">
+        
+        <div class="metric-card">
+        <div class="metric-label">Joue gauche</div>
+        <div class="metric-value">30.76 °C</div>
+        </div>
+        <div class="metric-card">
+        <div class="metric-label">Joue droite</div>
+        <div class="metric-value">30.63 °C</div>
+        </div>
+        <div class="metric-card">
+        <div class="metric-label">Nez</div>
+        <div class="metric-value">29.84 °C</div>
+        </div>
+        <div class="metric-card">
+        <div class="metric-label">Front</div>
+        <div class="metric-value">30.42 °C</div>
+        </div>
+        <div class="metric-card">
+        <div class="metric-label">Canthus moyen</div>
+        <div class="metric-value">31.01 °C</div>
+        </div>
+        <div class="metric-card">
+        <div class="metric-label">Menton</div>
+        <div class="metric-value">30.14 °C</div>
+        </div>
+        
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="title">Détail du score</div>
+        <div class="sub">Contribution des critères principaux</div>
+        <div class="two">
+        <div>
+        <div class="detail-row">
+        <div class="detail-name">Part gradient front / nez</div>
+        <div class="detail-value">+0.00</div>
+        </div>
+        <div class="detail-row">
+        <div class="detail-name">Part gradient canthus / nez</div>
+        <div class="detail-value">+0.00</div>
+        </div>
+        <div class="detail-row">
+        <div class="detail-name">Part température nez</div>
+        <div class="detail-value">-1.40</div>
+        </div>
+        </div>
+        <div>
+        <div class="detail-row">
+        <div class="detail-name">Part température front</div>
+        <div class="detail-value">-0.50</div>
+        </div>
+        <div class="detail-row">
+        <div class="detail-name">Part asymétrie joues</div>
+        <div class="detail-value">+0.00</div>
+        </div>
+        <div class="detail-row">
+        <div class="detail-name">Score final</div>
+        <div class="detail-value">-1.90</div>
+        </div>
+        </div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="title">Interprétation</div>
+        <div class="sub">Facteurs détectés et justification technique</div>
+        <ul><li>Nez froid (29.84°C)</li><li>Détection visage affinée par landmarks.</li></ul>
+    </div>
+    </div>
+    </body>
+    </html>
+    

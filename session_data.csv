@@ -8644,3 +8644,268 @@ Timestamp,Time_Relatif,Etat_Global,Score_Total,Score_Geo,Score_CNN,Temperature_H
 12:31:19,6577.21,NEUTRE,0.0,0.0,0.0,21.7,6,Ecarquilles,Stable,Parle
 12:31:19,6577.38,NEUTRE,0.0,0.0,0.0,21.7,5,Neutre,Stable,Parle
 12:31:19,6577.48,NEUTRE,0.0,0.0,0.0,21.7,9,Ecarquilles,Stable,Parle
+12:45:20,20.56,CONFORT,5.0,5.0,0.0,21.0,0,Neutre,Stable,Sourire leger
+12:45:20,20.67,CONFORT,5.0,5.0,0.0,21.0,9,Neutre,Stable,Sourire leger
+12:45:20,20.98,CONFORT,5.0,5.0,0.0,21.0,3,Neutre,Stable,Sourire leger
+12:45:20,21.07,CONFORT,5.0,5.0,0.0,21.0,11,Neutre,Stable,Grand Sourire
+12:45:20,21.2,CONFORT,5.0,5.0,0.0,21.0,7,Neutre,Stable,Grand Sourire
+12:45:21,21.38,CONFORT,5.0,5.0,0.0,21.0,5,Neutre,Stable,Grand Sourire
+12:45:21,21.47,CONFORT,5.0,5.0,0.0,21.0,11,Neutre,Stable,Grand Sourire
+12:45:21,21.6,CONFORT,5.0,5.0,0.0,21.0,7,Neutre,Stable,Grand Sourire
+12:45:21,21.79,CONFORT,8.0,5.0,3.0,21.0,5,Neutre,Stable,Grand Sourire
+12:45:21,21.87,CONFORT,8.0,5.0,3.0,21.0,13,Neutre,Stable,Grand Sourire
+12:45:21,22.0,CONFORT,8.0,5.0,3.0,21.0,7,Neutre,Stable,Grand Sourire
+12:45:21,22.19,CONFORT,8.0,5.0,3.0,21.0,5,Neutre,Stable,Grand Sourire
+12:45:22,22.27,CONFORT,8.0,5.0,3.0,21.0,12,Neutre,Stable,Grand Sourire
+12:45:22,22.4,CONFORT,8.0,5.0,3.0,21.0,7,Neutre,Stable,Grand Sourire
+12:45:22,22.57,CONFORT,8.0,5.0,3.0,21.0,5,Neutre,Stable,Grand Sourire
+12:45:22,22.67,CONFORT,-1.0,-4.0,3.0,21.0,9,Neutre,Stable,Grimace / Tension
+12:45:22,22.8,CONFORT,3.0,0.0,3.0,21.0,7,Neutre,Stable,Parle
+12:45:22,23.02,CONFORT,8.0,5.0,3.0,21.0,4,Neutre,Stable,Sourire leger
+12:45:22,23.14,CONFORT,8.0,5.0,3.0,21.0,8,Neutre,Stable,Sourire leger
+12:45:23,23.35,CONFORT,8.0,5.0,3.0,21.0,4,Neutre,Stable,Sourire leger
+12:45:23,23.54,CONFORT,5.0,5.0,0.0,21.0,5,Neutre,Stable,Sourire leger
+12:45:23,23.61,CONFORT,5.0,5.0,0.0,21.0,13,Neutre,Stable,Sourire leger
+12:45:23,23.74,CONFORT,5.0,5.0,0.0,21.0,7,Neutre,Stable,Sourire leger
+12:45:23,23.92,CONFORT,-1.0,-1.0,0.0,21.0,5,Neutre,Fronces,Sourire leger
+12:45:23,24.01,NEUTRE,-1.0,-1.0,0.0,21.0,11,Neutre,Fronces,Sourire leger
+12:45:23,24.14,NEUTRE,-1.0,-1.0,0.0,21.1,7,Neutre,Fronces,Sourire leger
+12:45:24,24.31,NEUTRE,5.0,5.0,0.0,21.1,6,Neutre,Stable,Sourire leger
+12:45:24,24.41,NEUTRE,0.0,0.0,0.0,21.1,9,Neutre,Releves,Fermee
+12:45:24,24.54,NEUTRE,0.0,0.0,0.0,21.1,7,Neutre,Stable,Fermee
+12:45:24,24.73,NEUTRE,0.0,0.0,0.0,21.2,5,Neutre,Stable,Fermee
+12:45:24,24.8,NEUTRE,0.0,0.0,0.0,21.2,14,Neutre,Stable,Fermee
+12:45:24,24.93,NEUTRE,0.0,0.0,0.0,21.2,7,Neutre,Stable,Fermee
+12:45:24,25.1,NEUTRE,5.0,5.0,0.0,21.2,5,Neutre,Stable,Sourire leger
+12:45:24,25.2,NEUTRE,5.0,5.0,0.0,21.3,10,Neutre,Stable,Sourire leger
+12:45:25,25.46,NEUTRE,5.0,5.0,0.0,21.3,3,Neutre,Stable,Sourire leger
+12:45:25,25.56,NEUTRE,5.0,5.0,0.0,21.3,10,Ecarquilles,Stable,Sourire leger
+12:45:25,25.65,NEUTRE,5.0,5.0,0.0,21.3,10,Neutre,Stable,Sourire leger
+12:45:25,25.77,NEUTRE,-1.0,-1.0,0.0,21.4,8,Neutre,Fronces,Sourire leger
+12:45:25,25.95,NEUTRE,0.0,0.0,0.0,21.4,5,Plisses,Stable,Fermee
+12:45:25,26.05,NEUTRE,5.0,5.0,0.0,21.4,10,Plisses,Releves,Sourire leger
+12:45:25,26.17,NEUTRE,0.0,0.0,0.0,21.4,7,Plisses,Stable,Fermee
+12:45:26,26.35,NEUTRE,-6.0,-6.0,0.0,21.5,5,Neutre,Fronces,Fermee
+12:45:26,26.44,NEUTRE,-6.0,-6.0,0.0,21.5,10,Plisses,Fronces,Fermee
+12:45:26,26.85,NEUTRE,-1.0,-1.0,0.0,21.5,2,Neutre,Fronces,Sourire leger
+12:45:26,26.97,NEUTRE,-1.0,-1.0,0.0,21.5,7,Neutre,Fronces,Sourire leger
+12:45:26,27.17,NEUTRE,-1.0,-1.0,0.0,21.5,5,Neutre,Fronces,Sourire leger
+12:45:27,27.24,NEUTRE,-1.0,-1.0,0.0,21.6,14,Neutre,Fronces,Sourire leger
+12:45:27,27.37,NEUTRE,-1.0,-1.0,0.0,21.6,7,Neutre,Fronces,Sourire leger
+12:45:27,27.55,NEUTRE,-1.0,-1.0,0.0,21.6,5,Neutre,Fronces,Sourire leger
+12:45:27,27.64,NEUTRE,-1.0,-1.0,0.0,21.6,11,Neutre,Fronces,Sourire leger
+12:45:27,27.77,NEUTRE,-1.0,-1.0,0.0,21.6,7,Neutre,Fronces,Sourire leger
+12:45:27,27.94,NEUTRE,-1.0,-1.0,0.0,21.6,5,Neutre,Fronces,Sourire leger
+12:45:27,28.03,NEUTRE,-1.0,-1.0,0.0,21.7,10,Neutre,Fronces,Sourire leger
+12:45:27,28.17,NEUTRE,-1.0,-1.0,0.0,21.7,7,Neutre,Fronces,Sourire leger
+12:45:28,28.36,NEUTRE,-1.0,-1.0,0.0,21.7,5,Neutre,Fronces,Sourire leger
+12:45:28,28.44,NEUTRE,-1.0,-1.0,0.0,21.7,12,Neutre,Fronces,Sourire leger
+12:45:28,28.57,NEUTRE,-1.0,-1.0,0.0,21.7,7,Neutre,Fronces,Sourire leger
+12:45:28,28.76,NEUTRE,-1.0,-1.0,0.0,21.7,5,Neutre,Fronces,Sourire leger
+12:45:28,28.84,NEUTRE,-1.0,-1.0,0.0,21.8,11,Neutre,Fronces,Sourire leger
+12:45:28,28.97,NEUTRE,-1.0,-1.0,0.0,21.8,7,Neutre,Fronces,Sourire leger
+12:45:28,29.14,NEUTRE,-1.0,-1.0,0.0,21.8,5,Plisses,Fronces,Sourire leger
+12:45:29,29.24,NEUTRE,-1.0,-1.0,0.0,21.8,9,Neutre,Fronces,Sourire leger
+12:45:29,29.37,NEUTRE,-1.0,-1.0,0.0,21.8,7,Neutre,Fronces,Sourire leger
+12:45:29,29.54,NEUTRE,-1.0,-1.0,0.0,21.8,5,Neutre,Fronces,Sourire leger
+12:45:29,29.63,NEUTRE,-1.0,-1.0,0.0,21.8,11,Neutre,Fronces,Sourire leger
+12:45:29,29.77,NEUTRE,-1.0,-1.0,0.0,21.9,7,Neutre,Fronces,Sourire leger
+12:45:29,29.95,NEUTRE,-1.0,-1.0,0.0,21.9,5,Neutre,Fronces,Sourire leger
+12:45:29,30.03,NEUTRE,-1.0,-1.0,0.0,21.9,12,Plisses,Fronces,Sourire leger
+12:45:29,30.18,NEUTRE,-1.0,-1.0,0.0,21.9,7,Plisses,Fronces,Sourire leger
+12:45:30,30.36,NEUTRE,-1.0,-1.0,0.0,21.9,5,Plisses,Fronces,Sourire leger
+12:45:30,30.44,NEUTRE,-1.0,-1.0,0.0,21.9,12,Plisses,Fronces,Sourire leger
+12:45:30,30.57,NEUTRE,5.0,5.0,0.0,21.9,7,Plisses,Stable,Sourire leger
+12:45:30,30.77,NEUTRE,-1.0,-1.0,0.0,21.9,4,Plisses,Fronces,Sourire leger
+12:45:30,30.84,NEUTRE,-1.0,-1.0,0.0,22.0,14,Plisses,Fronces,Sourire leger
+12:45:30,30.97,NEUTRE,-1.0,-1.0,0.0,22.0,7,Plisses,Fronces,Sourire leger
+12:45:30,31.16,NEUTRE,-1.0,-1.0,0.0,22.0,5,Plisses,Fronces,Sourire leger
+12:45:31,31.24,NEUTRE,-1.0,-1.0,0.0,22.0,12,Plisses,Fronces,Sourire leger
+12:45:31,31.37,NEUTRE,-1.0,-1.0,0.0,22.0,7,Plisses,Fronces,Sourire leger
+12:45:31,31.56,NEUTRE,-1.0,-1.0,0.0,22.0,5,Plisses,Fronces,Sourire leger
+12:45:31,31.64,NEUTRE,-1.0,-1.0,0.0,22.0,12,Plisses,Fronces,Sourire leger
+12:45:31,31.77,NEUTRE,-1.0,-1.0,0.0,22.0,7,Plisses,Fronces,Sourire leger
+12:45:31,31.96,NEUTRE,-1.0,-1.0,0.0,22.0,5,Plisses,Fronces,Sourire leger
+12:45:31,32.04,NEUTRE,-1.0,-1.0,0.0,22.0,11,Plisses,Fronces,Sourire leger
+12:45:31,32.17,NEUTRE,-1.0,-1.0,0.0,22.1,7,Plisses,Fronces,Sourire leger
+12:45:32,32.36,NEUTRE,-1.0,-1.0,0.0,22.1,5,Plisses,Fronces,Sourire leger
+12:45:32,32.44,NEUTRE,-1.0,-1.0,0.0,22.1,12,Plisses,Fronces,Sourire leger
+12:45:32,32.57,NEUTRE,-1.0,-1.0,0.0,22.1,7,Neutre,Fronces,Sourire leger
+12:45:32,32.76,NEUTRE,-1.0,-1.0,0.0,22.1,5,Neutre,Fronces,Sourire leger
+12:45:32,32.84,NEUTRE,-1.0,-1.0,0.0,22.1,11,Neutre,Fronces,Sourire leger
+12:45:32,32.97,NEUTRE,0.0,0.0,0.0,22.1,7,Plisses,Stable,Fermee
+12:45:32,33.15,NEUTRE,5.0,5.0,0.0,22.1,5,Neutre,Stable,Sourire leger
+12:45:33,33.24,NEUTRE,0.0,0.0,0.0,22.1,10,Neutre,Stable,Fermee
+12:45:33,33.37,NEUTRE,-4.0,-4.0,0.0,22.1,7,Plisses,Stable,Grimace / Tension
+12:45:33,33.57,NEUTRE,-5.0,-5.0,0.0,22.1,5,Neutre,Stable,Baillement
+12:45:33,33.64,NEUTRE,5.0,5.0,0.0,22.1,13,Neutre,Stable,Sourire leger
+12:45:33,33.77,NEUTRE,5.0,5.0,0.0,22.1,7,Neutre,Stable,Sourire leger
+12:45:33,33.95,NEUTRE,5.0,5.0,0.0,22.2,5,Neutre,Stable,Sourire leger
+12:45:33,34.04,NEUTRE,5.0,5.0,0.0,22.2,11,Neutre,Stable,Sourire leger
+12:45:33,34.17,NEUTRE,5.0,5.0,0.0,22.2,7,Neutre,Stable,Sourire leger
+12:45:34,34.38,NEUTRE,-4.0,-4.0,0.0,22.2,4,Plisses,Releves,Grimace / Tension
+12:45:34,34.45,NEUTRE,-4.0,-4.0,0.0,22.2,13,Plisses,Releves,Grimace / Tension
+12:45:34,34.58,NEUTRE,-4.0,-4.0,0.0,22.2,7,Plisses,Releves,Grimace / Tension
+12:45:34,34.75,NEUTRE,-4.0,-4.0,0.0,22.2,5,Plisses,Releves,Grimace / Tension
+12:45:34,34.85,NEUTRE,-4.0,-4.0,0.0,22.2,10,Plisses,Releves,Grimace / Tension
+12:45:34,34.97,NEUTRE,-4.0,-4.0,0.0,22.2,7,Plisses,Releves,Grimace / Tension
+12:45:34,35.15,NEUTRE,-4.0,-4.0,0.0,22.2,5,Plisses,Releves,Grimace / Tension
+12:45:35,35.24,NEUTRE,5.0,5.0,0.0,22.2,10,Plisses,Releves,Grand Sourire
+12:45:35,35.38,NEUTRE,-4.0,-4.0,0.0,22.2,7,Plisses,Releves,Grimace / Tension
+12:45:35,35.57,NEUTRE,-4.0,-4.0,0.0,22.2,5,Neutre,Releves,Grimace / Tension
+12:45:35,35.65,NEUTRE,-4.0,-4.0,0.0,22.2,12,Neutre,Releves,Grimace / Tension
+12:45:35,35.78,NEUTRE,-4.0,-4.0,0.0,22.2,7,Plisses,Releves,Grimace / Tension
+12:45:35,35.96,NEUTRE,-4.0,-4.0,0.0,22.2,5,Plisses,Releves,Grimace / Tension
+12:45:35,36.05,NEUTRE,-4.0,-4.0,0.0,22.3,11,Plisses,Releves,Grimace / Tension
+12:45:35,36.17,NEUTRE,-4.0,-4.0,0.0,22.3,8,Plisses,Releves,Grimace / Tension
+12:45:36,36.34,NEUTRE,-4.0,-4.0,0.0,22.3,5,Plisses,Releves,Grimace / Tension
+12:45:36,36.44,NEUTRE,-4.0,-4.0,0.0,22.3,10,Plisses,Releves,Grimace / Tension
+12:45:36,36.57,INCONFORT,-4.0,-4.0,0.0,22.2,7,Plisses,Releves,Grimace / Tension
+12:45:36,36.93,INCONFORT,-4.0,-4.0,0.0,22.1,2,Plisses,Releves,Grimace / Tension
+12:45:36,37.0,INCONFORT,-4.0,-4.0,0.0,22.0,15,Neutre,Releves,Grimace / Tension
+12:45:36,37.15,INCONFORT,-4.0,-4.0,0.0,21.9,6,Plisses,Stable,Grimace / Tension
+12:45:37,37.32,INCONFORT,-4.0,-4.0,0.0,21.9,6,Neutre,Stable,Grimace / Tension
+12:45:37,37.4,NEUTRE,5.0,5.0,0.0,21.9,11,Neutre,Stable,Grand Sourire
+12:45:37,37.53,NEUTRE,5.0,5.0,0.0,21.9,7,Neutre,Stable,Grand Sourire
+12:45:37,37.71,NEUTRE,5.0,5.0,0.0,21.9,5,Neutre,Stable,Grand Sourire
+12:45:37,37.79,NEUTRE,5.0,5.0,0.0,21.9,11,Neutre,Stable,Grand Sourire
+12:45:37,37.92,NEUTRE,5.0,5.0,0.0,21.9,7,Neutre,Stable,Grand Sourire
+12:45:37,38.1,NEUTRE,5.0,5.0,0.0,21.9,5,Neutre,Stable,Grand Sourire
+12:45:37,38.2,NEUTRE,5.0,5.0,0.0,21.9,10,Neutre,Stable,Grand Sourire
+12:45:38,38.33,NEUTRE,5.0,5.0,0.0,22.0,7,Neutre,Stable,Grand Sourire
+12:45:38,38.51,NEUTRE,8.0,5.0,3.0,22.0,5,Plisses,Stable,Grand Sourire
+12:45:38,38.6,CONFORT,8.0,5.0,3.0,21.9,12,Plisses,Stable,Grand Sourire
+12:45:38,38.73,CONFORT,8.0,5.0,3.0,21.9,7,Plisses,Stable,Grand Sourire
+12:45:38,38.9,CONFORT,8.0,5.0,3.0,21.9,5,Plisses,Stable,Grand Sourire
+12:45:38,38.99,CONFORT,8.0,5.0,3.0,21.9,10,Plisses,Stable,Grand Sourire
+12:45:38,39.13,CONFORT,8.0,5.0,3.0,21.9,7,Plisses,Stable,Grand Sourire
+12:45:39,39.3,CONFORT,8.0,5.0,3.0,21.9,6,Plisses,Stable,Grand Sourire
+12:45:39,39.4,CONFORT,8.0,5.0,3.0,21.8,9,Plisses,Stable,Grand Sourire
+12:45:39,39.53,CONFORT,8.0,5.0,3.0,21.8,7,Plisses,Stable,Grand Sourire
+12:45:39,39.72,CONFORT,8.0,5.0,3.0,21.8,5,Plisses,Stable,Grand Sourire
+12:45:39,39.8,CONFORT,8.0,5.0,3.0,21.8,12,Plisses,Stable,Grand Sourire
+12:45:39,39.93,CONFORT,8.0,5.0,3.0,21.8,7,Neutre,Stable,Grand Sourire
+12:45:39,40.1,CONFORT,8.0,5.0,3.0,21.8,5,Neutre,Stable,Grand Sourire
+12:45:39,40.2,CONFORT,8.0,5.0,3.0,21.7,10,Neutre,Stable,Grand Sourire
+12:45:40,40.32,CONFORT,8.0,5.0,3.0,21.7,7,Neutre,Stable,Grand Sourire
+12:45:40,40.52,CONFORT,8.0,5.0,3.0,21.7,5,Neutre,Stable,Grand Sourire
+12:45:40,40.6,CONFORT,8.0,5.0,3.0,21.7,13,Neutre,Stable,Grand Sourire
+12:45:40,40.72,CONFORT,8.0,5.0,3.0,21.7,8,Neutre,Stable,Grand Sourire
+12:45:40,40.89,CONFORT,-1.0,-4.0,3.0,21.7,5,Neutre,Stable,Grimace / Tension
+12:45:40,40.99,CONFORT,3.0,0.0,3.0,21.7,10,Neutre,Stable,Fermee
+12:45:40,41.13,CONFORT,3.0,0.0,3.0,21.6,7,Neutre,Stable,Fermee
+12:45:41,41.3,CONFORT,3.0,0.0,3.0,21.6,5,Neutre,Stable,Fermee
+12:45:41,41.4,CONFORT,3.0,0.0,3.0,21.6,10,Neutre,Stable,Fermee
+12:45:41,41.52,CONFORT,3.0,0.0,3.0,21.6,8,Neutre,Stable,Fermee
+12:45:41,41.7,NEUTRE,3.0,0.0,3.0,21.6,5,Neutre,Stable,Fermee
+12:45:41,41.8,NEUTRE,3.0,0.0,3.0,21.6,9,Neutre,Stable,Fermee
+12:45:41,41.92,NEUTRE,3.0,0.0,3.0,21.7,8,Neutre,Stable,Fermee
+12:45:41,42.11,NEUTRE,3.0,0.0,3.0,21.7,5,Neutre,Stable,Fermee
+12:45:41,42.19,NEUTRE,3.0,0.0,3.0,21.7,12,Neutre,Stable,Fermee
+12:45:42,42.32,NEUTRE,3.0,0.0,3.0,21.7,7,Neutre,Stable,Fermee
+12:45:42,42.54,NEUTRE,3.0,0.0,3.0,21.7,4,Neutre,Stable,Fermee
+12:45:42,42.67,NEUTRE,3.0,0.0,3.0,21.7,7,Neutre,Stable,Fermee
+12:45:42,42.82,NEUTRE,3.0,0.0,3.0,21.8,6,Neutre,Stable,Fermee
+12:45:42,42.99,NEUTRE,5.0,5.0,0.0,21.8,5,Ecarquilles,Stable,Sourire leger
+12:45:42,43.1,NEUTRE,5.0,5.0,0.0,21.8,9,Neutre,Stable,Sourire leger
+12:45:43,43.23,NEUTRE,5.0,5.0,0.0,21.8,7,Neutre,Stable,Sourire leger
+12:45:43,43.39,NEUTRE,5.0,5.0,0.0,21.8,6,Neutre,Stable,Sourire leger
+12:45:43,43.55,NEUTRE,0.0,0.0,0.0,21.8,6,Neutre,Stable,Fermee
+12:45:43,43.7,NEUTRE,0.0,0.0,0.0,21.8,7,Neutre,Stable,Fermee
+12:45:43,43.85,NEUTRE,0.0,0.0,0.0,21.9,6,Plisses,Stable,Fermee
+12:45:43,44.04,NEUTRE,5.0,5.0,0.0,21.9,5,Neutre,Stable,Sourire leger
+12:45:43,44.17,NEUTRE,5.0,5.0,0.0,21.9,7,Neutre,Stable,Sourire leger
+12:45:44,44.33,NEUTRE,5.0,5.0,0.0,21.9,5,Neutre,Stable,Grand Sourire
+12:45:44,44.44,NEUTRE,5.0,5.0,0.0,21.9,9,Neutre,Stable,Grand Sourire
+12:45:44,44.57,NEUTRE,5.0,5.0,0.0,21.9,7,Neutre,Stable,Grand Sourire
+12:45:44,44.74,NEUTRE,5.0,5.0,0.0,21.9,5,Neutre,Stable,Grand Sourire
+12:45:44,44.84,NEUTRE,5.0,5.0,0.0,21.9,10,Neutre,Stable,Grand Sourire
+12:45:44,44.97,NEUTRE,5.0,5.0,0.0,21.9,7,Neutre,Stable,Grand Sourire
+12:45:44,45.14,CONFORT,5.0,5.0,0.0,21.9,5,Neutre,Stable,Grand Sourire
+12:45:45,45.27,NEUTRE,-4.0,-4.0,0.0,21.9,7,Neutre,Stable,Grimace / Tension
+12:45:45,45.49,NEUTRE,5.0,5.0,0.0,22.0,4,Neutre,Stable,Sourire leger
+12:45:45,45.68,NEUTRE,5.0,5.0,0.0,22.0,5,Neutre,Stable,Sourire leger
+12:45:45,45.77,NEUTRE,0.0,0.0,0.0,22.0,10,Plisses,Releves,Fermee
+12:45:45,45.93,NEUTRE,0.0,0.0,0.0,22.0,6,Plisses,Releves,Fermee
+12:45:45,46.1,NEUTRE,0.0,0.0,0.0,22.0,5,Plisses,Stable,Fermee
+12:45:45,46.19,NEUTRE,0.0,0.0,0.0,22.0,10,Neutre,Stable,Fermee
+12:45:46,46.33,NEUTRE,0.0,0.0,0.0,22.0,7,Neutre,Stable,Fermee
+12:45:46,46.51,NEUTRE,0.0,0.0,0.0,22.0,5,Plisses,Stable,Fermee
+12:45:46,46.59,NEUTRE,0.0,0.0,0.0,22.0,12,Neutre,Stable,Fermee
+12:45:46,46.73,NEUTRE,5.0,5.0,0.0,22.0,7,Neutre,Stable,Sourire leger
+12:45:46,46.9,NEUTRE,-4.0,-4.0,0.0,22.1,5,Neutre,Stable,Grimace / Tension
+12:45:46,47.0,NEUTRE,0.0,0.0,0.0,22.1,9,Neutre,Stable,Fermee
+12:45:46,47.13,NEUTRE,0.0,0.0,0.0,22.1,7,Neutre,Stable,Fermee
+12:45:47,47.31,NEUTRE,0.0,0.0,0.0,22.1,5,Neutre,Stable,Fermee
+12:45:47,47.4,NEUTRE,0.0,0.0,0.0,22.1,10,Neutre,Stable,Fermee
+12:45:47,47.53,NEUTRE,0.0,0.0,0.0,22.1,7,Neutre,Stable,Fermee
+12:45:47,47.7,NEUTRE,0.0,0.0,0.0,22.1,5,Neutre,Stable,Fermee
+12:45:47,47.8,NEUTRE,0.0,0.0,0.0,22.1,9,Neutre,Stable,Fermee
+12:45:47,47.93,NEUTRE,0.0,0.0,0.0,22.1,7,Neutre,Stable,Fermee
+12:45:47,48.1,NEUTRE,0.0,0.0,0.0,22.1,5,Neutre,Stable,Fermee
+12:45:47,48.2,NEUTRE,0.0,0.0,0.0,22.1,9,Neutre,Stable,Fermee
+12:45:48,48.32,NEUTRE,0.0,0.0,0.0,22.1,8,Neutre,Stable,Fermee
+12:45:48,48.63,NEUTRE,0.0,0.0,0.0,22.1,3,Neutre,Stable,Fermee
+12:45:48,48.68,NEUTRE,0.0,0.0,0.0,22.2,17,Neutre,Stable,Fermee
+12:45:48,48.82,NEUTRE,0.0,0.0,0.0,22.2,7,Neutre,Stable,Fermee
+12:45:48,48.99,NEUTRE,0.0,0.0,0.0,22.2,5,Neutre,Stable,Fermee
+12:45:48,49.09,NEUTRE,0.0,0.0,0.0,22.2,10,Neutre,Stable,Fermee
+12:45:48,49.21,NEUTRE,0.0,0.0,0.0,22.2,8,Neutre,Stable,Fermee
+12:45:49,49.38,NEUTRE,0.0,0.0,0.0,22.2,5,Neutre,Stable,Fermee
+12:45:49,49.49,NEUTRE,0.0,0.0,0.0,22.2,9,Neutre,Stable,Fermee
+12:45:49,49.62,NEUTRE,0.0,0.0,0.0,22.2,7,Ecarquilles,Stable,Fermee
+12:45:49,49.8,NEUTRE,0.0,0.0,0.0,22.2,5,Ecarquilles,Stable,Fermee
+12:45:49,49.88,NEUTRE,0.0,0.0,0.0,22.2,13,Neutre,Stable,Fermee
+12:45:49,50.0,NEUTRE,0.0,0.0,0.0,22.2,7,Neutre,Stable,Fermee
+12:45:49,50.19,NEUTRE,0.0,0.0,0.0,22.2,5,Neutre,Stable,Fermee
+12:45:50,50.27,NEUTRE,0.0,0.0,0.0,22.2,11,Neutre,Stable,Fermee
+12:45:50,50.4,NEUTRE,0.0,0.0,0.0,22.2,7,Neutre,Stable,Fermee
+12:45:50,50.58,NEUTRE,0.0,0.0,0.0,22.2,5,Neutre,Stable,Fermee
+12:45:50,50.67,NEUTRE,0.0,0.0,0.0,22.2,10,Neutre,Stable,Fermee
+12:45:50,50.8,NEUTRE,0.0,0.0,0.0,22.3,7,Neutre,Stable,Fermee
+12:45:50,50.99,NEUTRE,0.0,0.0,0.0,22.3,5,Neutre,Stable,Fermee
+12:45:52,52.39,NEUTRE,0.0,0.0,0.0,22.3,0,Neutre,Stable,Fermee
+12:45:52,52.54,NEUTRE,0.0,0.0,0.0,22.3,6,Neutre,Stable,Fermee
+12:45:52,52.71,NEUTRE,0.0,0.0,0.0,22.3,5,Neutre,Stable,Fermee
+12:45:52,52.81,NEUTRE,0.0,0.0,0.0,22.3,10,Neutre,Stable,Fermee
+12:45:52,52.94,NEUTRE,0.0,0.0,0.0,22.3,7,Neutre,Stable,Fermee
+12:45:52,53.13,NEUTRE,0.0,0.0,0.0,22.3,5,Neutre,Stable,Fermee
+12:45:53,53.22,NEUTRE,0.0,0.0,0.0,22.3,10,Neutre,Stable,Fermee
+12:45:53,53.35,NEUTRE,0.0,0.0,0.0,22.3,7,Neutre,Stable,Fermee
+12:45:53,53.54,NEUTRE,0.0,0.0,0.0,22.3,5,Neutre,Stable,Fermee
+12:45:53,53.62,NEUTRE,0.0,0.0,0.0,22.3,12,Neutre,Stable,Fermee
+12:45:53,53.75,NEUTRE,0.0,0.0,0.0,22.3,7,Neutre,Stable,Fermee
+12:45:53,53.94,NEUTRE,0.0,0.0,0.0,22.3,5,Neutre,Stable,Fermee
+12:45:53,54.02,NEUTRE,0.0,0.0,0.0,22.3,12,Neutre,Stable,Fermee
+12:45:53,54.15,NEUTRE,0.0,0.0,0.0,22.3,7,Neutre,Stable,Fermee
+12:45:54,54.32,NEUTRE,0.0,0.0,0.0,22.3,5,Neutre,Stable,Fermee
+12:45:54,54.42,NEUTRE,0.0,0.0,0.0,22.3,10,Neutre,Stable,Fermee
+12:45:54,54.55,NEUTRE,0.0,0.0,0.0,22.3,7,Neutre,Stable,Fermee
+12:45:54,54.72,NEUTRE,0.0,0.0,0.0,22.3,5,Neutre,Stable,Fermee
+12:45:54,54.82,NEUTRE,0.0,0.0,0.0,22.3,10,Neutre,Stable,Fermee
+12:45:54,54.95,NEUTRE,0.0,0.0,0.0,22.3,7,Neutre,Stable,Fermee
+12:45:54,55.13,NEUTRE,0.0,0.0,0.0,22.3,5,Neutre,Stable,Fermee
+12:45:55,55.22,NEUTRE,0.0,0.0,0.0,22.3,11,Neutre,Stable,Fermee
+12:45:55,55.37,NEUTRE,0.0,0.0,0.0,22.3,6,Plisses,Stable,Fermee
+12:45:55,55.54,NEUTRE,0.0,0.0,0.0,22.3,5,Neutre,Stable,Fermee
+12:45:55,55.62,NEUTRE,0.0,0.0,0.0,22.4,11,Neutre,Stable,Fermee
+12:45:55,55.74,NEUTRE,0.0,0.0,0.0,22.4,8,Neutre,Stable,Fermee
+12:45:55,55.91,NEUTRE,0.0,0.0,0.0,22.4,5,Plisses,Releves,Fermee
+12:45:55,56.0,NEUTRE,0.0,0.0,0.0,22.4,10,Neutre,Stable,Fermee
+12:45:55,56.14,NEUTRE,0.0,0.0,0.0,22.4,7,Neutre,Stable,Fermee
+12:45:56,56.31,NEUTRE,0.0,0.0,0.0,22.4,5,Neutre,Stable,Fermee
+12:45:56,56.4,NEUTRE,0.0,0.0,0.0,22.4,10,Neutre,Stable,Fermee
+12:45:56,56.53,NEUTRE,0.0,0.0,0.0,22.4,7,Neutre,Stable,Fermee
+12:45:56,56.72,NEUTRE,5.0,5.0,0.0,22.4,5,Neutre,Stable,Sourire leger
+12:45:56,56.81,NEUTRE,5.0,5.0,0.0,22.4,11,Plisses,Releves,Sourire leger
+12:45:56,56.94,NEUTRE,0.0,0.0,0.0,22.4,7,Plisses,Releves,Fermee
+12:45:56,57.12,NEUTRE,0.0,0.0,0.0,22.4,5,Neutre,Stable,Fermee
+12:45:56,57.21,NEUTRE,0.0,0.0,0.0,22.4,11,Ecarquilles,Stable,Fermee
+12:45:57,57.34,NEUTRE,0.0,0.0,0.0,22.4,7,Neutre,Stable,Parle
+12:45:57,57.53,NEUTRE,-4.0,-4.0,0.0,22.4,5,Neutre,Stable,Grimace / Tension
+12:45:57,57.61,NEUTRE,0.0,0.0,0.0,22.4,13,Neutre,Stable,Parle
+12:45:57,57.74,NEUTRE,-5.0,-5.0,0.0,22.4,7,Neutre,Stable,Baillement
+12:45:57,57.91,NEUTRE,-5.0,-5.0,0.0,22.4,5,Neutre,Stable,Baillement
+12:45:57,58.02,NEUTRE,0.0,0.0,0.0,22.4,8,Neutre,Stable,Fermee
+12:45:57,58.15,NEUTRE,0.0,0.0,0.0,22.4,7,Neutre,Stable,Fermee
+12:45:58,58.32,NEUTRE,0.0,0.0,0.0,22.4,6,Neutre,Stable,Fermee

@@ -1,396 +1,401 @@
-"""
-server.py — Stellantis CARE Monitor : Pont API FastAPI
-=======================================================
-Lancement :  python -m uvicorn server:app --host 0.0.0.0 --port 8000
-"""
+from __future__ import annotations
 
-import base64
-import threading
-import time
-from collections import Counter
-from typing import Optional
-
+import os
 import cv2
+import math
 import numpy as np
-import uvicorn
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from dataclasses import dataclass, field
+from typing import Dict, List, Optional, Tuple
 
 try:
-    from detection import FaceRegionDetector
-    from emotion_cnn import EmotionCNNAnalyzer
-    from geometry_analysis import FaceGeometryAnalyzer
-    from data_logger import ValidationLogger
-except ImportError as e:
-    raise RuntimeError(f"[FATAL] Module manquant : {e}")
+    import mediapipe as mp
+    HAS_MP = True
+except Exception:
+    HAS_MP = False
+    mp_face_mesh = None
 
-try:
-    from vlm_analyzer import VLMAnalyzer
-    HAS_VLM = True
-except ImportError:
-    HAS_VLM = False
-    print("[WARN] VLMAnalyzer non disponible — questions VLM désactivées.")
+# ==============================
+# CONFIG
+# ==============================
 
-try:
-    from clothing_analysis import ClothingAnalyzer
-    HAS_CLOTHING = True
-except ImportError:
-    HAS_CLOTHING = False
-    class ClothingAnalyzer:
-        def analyze_attire(self, img, bbox): return []
+ROI_INDICES = {
+    "forehead": [10, 67, 109, 108, 151, 337, 338, 297, 299, 69],
+    "nose": [1, 2, 4, 5, 6, 19, 94, 195, 197],
+    "chin": [152, 148, 149, 150, 169, 170, 171, 175, 176, 377, 378, 379, 394, 395, 396, 400],
+    "cheek_left": [50, 101, 116, 117, 118, 119, 120, 123, 187, 205, 206, 207],
+    "cheek_right": [280, 330, 345, 346, 347, 348, 349, 352, 411, 425, 426, 427],
+    # Inner canthi are intentionally small, point-centered ROIs built later around landmarks.
+}
 
-C_OK      = (80,  200, 80)
-C_WARN    = (0,   165, 255)
-C_ALERT   = (50,   50, 220)
-C_NEUTRAL = (160, 160, 160)
+INNER_CANTHUS_LEFT = 133
+INNER_CANTHUS_RIGHT = 362
+NOSE_TIP = 1
 
 
-class StellantisAPIEngine:
+@dataclass
+class ZoneStats:
+    mean: float = 0.0
+    median: float = 0.0
+    std: float = 0.0
+    tmin: float = 0.0
+    tmax: float = 0.0
+    p10: float = 0.0
+    p90: float = 0.0
+    n: int = 0
 
-    def __init__(self):
-        print("\n=== STELLANTIS CARE MONITOR (MODE API) ===")
-        self.detector     = FaceRegionDetector()
-        self.geo_engine   = FaceGeometryAnalyzer()
-        self.cnn_engine   = EmotionCNNAnalyzer("models/emotion_resnet18_affectnet.pt")
-        self.cloth_engine = ClothingAnalyzer()
-        self.logger       = ValidationLogger("session_data.csv")
-        self.vlm_engine   = VLMAnalyzer() if HAS_VLM else None
 
-        self.state         = "AUTO_CALIB"
-        self.calib_buffer  = []
-        self.CALIB_FRAMES  = 60
+@dataclass
+class ComfortResult:
+    label: str
+    direction: str
+    score: float
+    confidence: float
+    action: str
+    temperatures: Dict[str, float] = field(default_factory=dict)
+    features: Dict[str, float] = field(default_factory=dict)
+    notes: List[str] = field(default_factory=list)
 
-        self.target_temp  = 21.0
-        self.current_temp = 21.0
-        self.climate_mode = "AUTO"
 
-        self.state_history     = []
-        self.stats_percentages = {"CONFORT": 0, "NEUTRE": 0, "INCONFORT": 0}
+class ThermalFaceAnalyzer:
+    def __init__(self, temp_min: float = 18.0, temp_max: float = 36.2):
+        self.temp_min = temp_min
+        self.temp_max = temp_max
+        self.face_mesh = None
+        if HAS_MP:
+            
+            self.face_mesh_engine = mp.solutions.face_mesh.FaceMesh(
+                static_image_mode=False,
+                max_num_faces=1,
+                refine_landmarks=True,
+                min_detection_confidence=0.5,
+                min_tracking_confidence=0.5,
+            )
 
-        self.hud_data = {
-            "global_state": "CALIBRATION",
-            "geo_details":  {},
-            "cnn_details":  {"label": "-", "score": 0.0},
-            "clothes":      [],
+    # ------------------------------
+    # I/O + thermal preparation
+    # ------------------------------
+    def load_image(self, path: str) -> np.ndarray:
+        img = cv2.imread(path, cv2.IMREAD_COLOR)
+        if img is None:
+            raise FileNotFoundError(path)
+        return img
+
+    def thermal_to_celsius(self, img_bgr: np.ndarray) -> np.ndarray:
+        hsv = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV).astype(np.float32)
+        h = hsv[:, :, 0]
+        s = hsv[:, :, 1]
+        v = hsv[:, :, 2]
+
+        score_h = np.zeros_like(h, dtype=np.float32)
+        mask_cold = h > 80
+        score_h[mask_cold] = np.clip((130.0 - h[mask_cold]) / 130.0, 0.0, 0.35)
+
+        mask_mid = (h > 35) & (h <= 80)
+        score_h[mask_mid] = 0.3 + (80.0 - h[mask_mid]) / 80.0 * 0.25
+
+        mask_warm = (h > 12) & (h <= 35)
+        score_h[mask_warm] = 0.55 + (35.0 - h[mask_warm]) / 35.0 * 0.20
+
+        mask_hot = (h <= 12) | (h >= 170)
+        score_h[mask_hot] = 0.90
+
+        mask_white = (v > 220) & (s < 60)
+        score_h[mask_white] = 1.0
+
+        thermal_index = 0.7 * score_h + 0.3 * (v / 255.0)
+        celsius = self.temp_min + thermal_index * (self.temp_max - self.temp_min)
+        return celsius.astype(np.float32)
+
+    # ------------------------------
+    # Face / ROI detection
+    # ------------------------------
+    def detect_landmarks(self, img_bgr: np.ndarray) -> Optional[np.ndarray]:
+        if self.face_mesh is None:
+            return None
+        h, w = img_bgr.shape[:2]
+        rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+        out = self.face_mesh.process(rgb)
+        if not out.multi_face_landmarks:
+            return None
+        lms = out.multi_face_landmarks[0].landmark
+        pts = np.array([(p.x * w, p.y * h) for p in lms], dtype=np.float32)
+        pts[:, 0] = np.clip(pts[:, 0], 0, w - 1)
+        pts[:, 1] = np.clip(pts[:, 1], 0, h - 1)
+        return pts
+
+    def build_rois(self, img_shape: Tuple[int, int], landmarks: np.ndarray) -> Dict[str, np.ndarray]:
+        h, w = img_shape[:2]
+        rois: Dict[str, np.ndarray] = {}
+        for name, idxs in ROI_INDICES.items():
+            pts = landmarks[idxs].astype(np.int32)
+            rois[name] = cv2.convexHull(pts)
+
+        inter_eye = float(np.linalg.norm(landmarks[33] - landmarks[263])) + 1e-6
+        radius = max(3, int(inter_eye * 0.04))
+
+        for name, idx in [("inner_canthus_left", INNER_CANTHUS_LEFT), ("inner_canthus_right", INNER_CANTHUS_RIGHT), ("nose_tip", NOSE_TIP)]:
+            x, y = landmarks[idx].astype(int)
+            mask_poly = cv2.ellipse2Poly((int(x), int(y)), (radius, radius), 0, 0, 360, 30)
+            mask_poly[:, 0] = np.clip(mask_poly[:, 0], 0, w - 1)
+            mask_poly[:, 1] = np.clip(mask_poly[:, 1], 0, h - 1)
+            rois[name] = mask_poly.astype(np.int32)
+
+        return rois
+
+    # ------------------------------
+    # Robust temperature extraction
+    # ------------------------------
+    def _polygon_mask(self, shape: Tuple[int, int], poly: np.ndarray) -> np.ndarray:
+        m = np.zeros(shape[:2], dtype=np.uint8)
+        cv2.fillConvexPoly(m, poly, 255)
+        return m
+
+    def _robust_pixels(self, thermal: np.ndarray, mask: np.ndarray, floor: float = 24.0) -> np.ndarray:
+        vals = thermal[mask == 255]
+        vals = vals[np.isfinite(vals)]
+        vals = vals[vals >= floor]
+        if len(vals) == 0:
+            return vals
+        p05, p95 = np.percentile(vals, [5, 95])
+        vals = vals[(vals >= p05) & (vals <= p95)]
+        return vals
+
+    def extract_zone_stats(self, thermal: np.ndarray, rois: Dict[str, np.ndarray]) -> Dict[str, ZoneStats]:
+        stats: Dict[str, ZoneStats] = {}
+        for name, poly in rois.items():
+            mask = self._polygon_mask(thermal.shape, poly)
+            vals = self._robust_pixels(thermal, mask)
+            if len(vals) == 0:
+                stats[name] = ZoneStats()
+                continue
+            stats[name] = ZoneStats(
+                mean=float(np.mean(vals)),
+                median=float(np.median(vals)),
+                std=float(np.std(vals)),
+                tmin=float(np.min(vals)),
+                tmax=float(np.max(vals)),
+                p10=float(np.percentile(vals, 10)),
+                p90=float(np.percentile(vals, 90)),
+                n=int(len(vals)),
+            )
+        return stats
+
+    # ------------------------------
+    # Features based on literature
+    # ------------------------------
+    def build_features(self, zs: Dict[str, ZoneStats]) -> Dict[str, float]:
+        def t(name: str, fallback: float = np.nan) -> float:
+            return zs[name].mean if name in zs and zs[name].n > 0 else fallback
+
+        forehead = t("forehead")
+        nose = t("nose")
+        cheek_l = t("cheek_left")
+        cheek_r = t("cheek_right")
+        cheeks = np.nanmean([cheek_l, cheek_r])
+        chin = t("chin")
+        canthus_l = t("inner_canthus_left")
+        canthus_r = t("inner_canthus_right")
+        canthus = np.nanmean([canthus_l, canthus_r])
+        nose_tip = t("nose_tip", nose)
+
+        feats = {
+            "t_forehead": forehead,
+            "t_nose": nose,
+            "t_nose_tip": nose_tip,
+            "t_cheeks": cheeks,
+            "t_chin": chin,
+            "t_canthus": canthus,
+            "g_forehead_nose": forehead - nose,
+            "g_forehead_cheeks": forehead - cheeks,
+            "g_canthus_nose": canthus - nose,
+            "g_canthus_nose_tip": canthus - nose_tip,
+            "asym_cheeks": abs(cheek_l - cheek_r),
+            "face_uniformity": np.nanstd([forehead, nose, cheeks, chin]),
+            "mean_face": np.nanmean([forehead, nose, cheeks, chin]),
         }
+        return {k: float(v) for k, v in feats.items() if np.isfinite(v)}
 
-        self.frame_count     = 0
-        self.prev_frame_time = 0.0
-        self.current_clothes = []
-        self.score_history   = []
-        self.SMOOTH_WINDOW   = 10
+    # ------------------------------
+    # Decision logic
+    # ------------------------------
+    def classify(self, feats: Dict[str, float]) -> ComfortResult:
+        score = 0.0
+        notes: List[str] = []
+        conf = []
 
-        self.vlm_question     = None
-        self.vlm_running      = False
-        self.last_vlm_trigger = 0.0
-        self.VLM_INTERVAL     = 15.0
+        g_fn = feats.get("g_forehead_nose", 0.0)
+        g_cn = feats.get("g_canthus_nose", 0.0)
+        t_nose = feats.get("t_nose", 32.0)
+        t_fore = feats.get("t_forehead", 33.5)
+        t_canthus = feats.get("t_canthus", 34.0)
+        asym = feats.get("asym_cheeks", 0.0)
+        uniform = feats.get("face_uniformity", 0.0)
 
-    def update_history_30s(self, current_state: str):
-        now = time.time()
-        self.state_history.append((now, current_state))
-        self.state_history = [x for x in self.state_history if (now - x[0]) <= 30.0]
-        total = len(self.state_history)
-        if total > 0:
-            counts   = Counter([x[1] for x in self.state_history])
-            p_conf   = int((counts["CONFORT"]   / total) * 100)
-            p_inconf = int((counts["INCONFORT"] / total) * 100)
-            p_neutre = int((counts["NEUTRE"]    / total) * 100)
-            reste    = 100 - (p_conf + p_inconf + p_neutre)
-            p_neutre += reste
-            self.stats_percentages["CONFORT"]   = p_conf
-            self.stats_percentages["INCONFORT"] = p_inconf
-            self.stats_percentages["NEUTRE"]    = p_neutre
-
-    def update_climate(self):
-        st = self.hud_data["global_state"]
-        if st == "INCONFORT":
-            self.target_temp  = 18.0
-            self.climate_mode = "MODE MAX"
-        elif st == "CONFORT":
-            self.target_temp  = 21.0
-            self.climate_mode = "ECO"
+        # Strong cold evidence: nose cooler than forehead / inner canthus.
+        if g_fn >= 2.5:
+            score -= min(4.0, 1.2 + 0.9 * (g_fn - 2.5))
+            notes.append(f"Gradient front→nez élevé ({g_fn:.2f}°C): compatible avec refroidissement périphérique.")
+            conf.append(0.9)
+        elif g_fn >= 1.3:
+            score -= 1.4
+            notes.append(f"Gradient front→nez modéré ({g_fn:.2f}°C): tendance au froid.")
+            conf.append(0.75)
         else:
-            self.target_temp  = 22.5
-            self.climate_mode = "STANDARD"
-        self.current_temp += (self.target_temp - self.current_temp) * 0.02
+            conf.append(0.65)
 
-    def fusion_intelligence(self, geo, cnn_label, cnn_score, clothes_list):
-        s_geo = s_cnn = s_cloth = 0.0
-        txt_mouth = geo.get("txt_mouth", "")
-        txt_brows = geo.get("txt_brows", "")
-        txt_eyes  = geo.get("txt_eyes",  "")
+        if g_cn >= 3.0:
+            score -= 2.0
+            notes.append(f"Gradient canthus→nez élevé ({g_cn:.2f}°C): nez nettement plus froid que le coin interne de l’œil.")
+            conf.append(0.85)
+        elif g_cn <= 1.0:
+            score += 0.8
+            notes.append(f"Gradient canthus→nez faible ({g_cn:.2f}°C): visage plus uniformément chaud.")
+            conf.append(0.65)
 
-        if "Sourire"  in txt_mouth:                            s_geo += 5.0
-        if "Fronces"  in txt_brows:                            s_geo -= 6.0
-        if "Grimace"  in txt_mouth or "Tension" in txt_mouth:  s_geo -= 4.0
-        elif "Baillement" in txt_mouth:                         s_geo -= 5.0
+        if t_nose < 30.0:
+            score -= 2.0
+            notes.append(f"Nez froid ({t_nose:.2f}°C).")
+            conf.append(0.85)
+        elif t_nose > 34.0:
+            score += 1.2
+            notes.append(f"Nez très chaud ({t_nose:.2f}°C).")
+            conf.append(0.7)
 
-        if "Baillement" in txt_mouth and "Plisses" in txt_eyes:
-            return "INCONFORT", s_geo, s_geo, 0.0
+        if t_fore > 35.8:
+            score += 1.5
+            notes.append(f"Front chaud ({t_fore:.2f}°C): charge thermique globale possible.")
+            conf.append(0.7)
+        elif t_fore < 32.0:
+            score -= 0.8
+            notes.append(f"Front relativement frais ({t_fore:.2f}°C).")
+            conf.append(0.7)
 
-        if cnn_score > 0.6:
-            if cnn_label == "happy":                      s_cnn += 3.0
-            elif cnn_label in ["sad", "angry", "fear"]:   s_cnn -= 3.0
+        if t_canthus > 36.0 and t_nose > 33.5:
+            score += 1.2
+            notes.append("Coin interne de l’œil et nez élevés: profil compatible avec sensation de chaud.")
+            conf.append(0.65)
 
-        if HAS_CLOTHING:
-            if "DEBARDEUR" in clothes_list: s_cloth += 2.0
-            elif "MANTEAU"  in clothes_list: s_cloth -= 2.0
-            if "BONNET"    in clothes_list:  s_cloth -= 3.0
-            if "LUNETTES"  in clothes_list:  s_cloth += 0.5
+        if asym > 1.0:
+            notes.append(f"Asymétrie joues ({asym:.2f}°C): possible jet d’air latéral ou exposition non uniforme.")
+            conf.append(0.5)
 
-        total = s_geo + s_cnn + s_cloth
-        self.score_history.append(total)
-        if len(self.score_history) > self.SMOOTH_WINDOW:
-            self.score_history.pop(0)
-        smoothed = float(np.mean(self.score_history))
+        if uniform < 0.8:
+            score += 0.4
+            notes.append("Distribution thermique faciale homogène.")
+            conf.append(0.6)
 
-        if   smoothed >= 4.5:  final = "CONFORT"
-        elif smoothed <= -4.0: final = "INCONFORT"
-        else:                  final = "NEUTRE"
+        confidence = float(np.mean(conf)) if conf else 0.5
+        score = float(np.clip(score, -5.0, 5.0))
 
-        return final, total, s_geo, s_cnn
+        if score <= -1.8:
+            label = "INCONFORT"
+            direction = "froid"
+            action = "Augmenter légèrement la température cabine ou réduire le flux d’air froid direct."
+        elif score >= 1.8:
+            label = "INCONFORT"
+            direction = "chaud"
+            action = "Renforcer légèrement le refroidissement ou la ventilation."
+        elif abs(score) <= 0.8:
+            label = "CONFORT"
+            direction = "neutre"
+            action = "Maintenir la stratégie HVAC actuelle."
+        else:
+            label = "NEUTRE"
+            direction = "froid" if score < 0 else "chaud"
+            action = "Ajustement doux recommandé après confirmation temporelle."
 
-    def _vlm_worker(self, img_rgb: np.ndarray, bbox):
-        try:
-            crops_data = self.detector.crop_regions(img_rgb, bbox)
-            if crops_data and "regions_img" in crops_data:
-                result = self.vlm_engine.analyze(crops_data["regions_img"])
-                self.vlm_question = self._build_question(result)
-        except Exception as e:
-            print(f"[VLM] Erreur : {e}")
-        finally:
-            self.vlm_running = False
-
-    def _build_question(self, vlm_result: dict) -> str:
-        b = vlm_result.get("brows", {}).get("etat", "neutre")
-        e = vlm_result.get("eyes",  {}).get("etat", "neutre")
-        m = vlm_result.get("mouth", {}).get("etat", "neutre")
-        if b == "inconfort":
-            return "Vos sourcils semblent crispés. Avez-vous trop chaud ou trop froid ?"
-        if m == "inconfort":
-            return "Vous semblez inconfortable. Souhaitez-vous ajuster la température ?"
-        if e == "inconfort":
-            return "Vos yeux semblent fatigués. Souhaitez-vous que j'ajuste l'habitacle ?"
-        return "Êtes-vous confortable thermiquement ?"
-
-    def maybe_trigger_vlm(self, img_rgb: np.ndarray, bbox):
-        if not HAS_VLM or self.vlm_engine is None: return
-        if self.vlm_running or self.vlm_question is not None: return
-        if self.hud_data["global_state"] != "INCONFORT": return
-        if (time.time() - self.last_vlm_trigger) < self.VLM_INTERVAL: return
-        self.vlm_running      = True
-        self.last_vlm_trigger = time.time()
-        threading.Thread(target=self._vlm_worker, args=(img_rgb.copy(), bbox), daemon=True).start()
-
-    def process_frame(self, frame_bgr: np.ndarray):
-        self.frame_count += 1
-        img_rgb = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)
-        h, w    = frame_bgr.shape[:2]
-
-        if self.state == "AUTO_CALIB":
-            geo = self.geo_engine.analyze(img_rgb)
-            if geo:
-                self.calib_buffer.append(geo)
-            if len(self.calib_buffer) >= self.CALIB_FRAMES:
-                self.geo_engine.calibrate(self.calib_buffer)
-                self.state = "RUN"
-                print("[SERVER] Calibration automatique terminée → RUN")
-            annotated = self._draw_calibration(frame_bgr.copy(), len(self.calib_buffer))
-            return annotated, "calibration", "", self.current_temp
-
-        bbox    = self.detector.detect(img_rgb)
-        cnn_res = self.hud_data["cnn_details"]
-
-        if bbox is not None:
-            x1, y1, x2, y2 = bbox
-
-            if HAS_CLOTHING and self.frame_count % 30 == 0:
-                self.current_clothes     = self.cloth_engine.analyze_attire(img_rgb, bbox)
-                self.hud_data["clothes"] = self.current_clothes
-
-            if self.frame_count % 3 == 0:
-                m = int((y2 - y1) * 0.1)
-                face_crop = frame_bgr[max(0,y1-m):min(h,y2+m), max(0,x1-m):min(w,x2+m)]
-                if face_crop.size > 0:
-                    lbl, sc, _, _ = self.cnn_engine.analyze_emotion(face_crop)
-                    cnn_res = {"label": lbl, "score": sc}
-                    self.hud_data["cnn_details"] = cnn_res
-
-            geo_res = self.geo_engine.analyze(img_rgb)
-            self.hud_data["geo_details"] = geo_res if geo_res else {}
-
-            if geo_res:
-                if "Sourire" in geo_res.get("txt_mouth", "") and cnn_res["label"] in ["sad", "angry"]:
-                    cnn_res["label"] = "happy"
-
-                final, total, s_geo, s_cnn = self.fusion_intelligence(
-                    geo_res, cnn_res["label"], cnn_res["score"], self.current_clothes
-                )
-                self.hud_data["global_state"] = final
-                self.update_history_30s(final)
-                self.update_climate()
-
-                now = time.time()
-                fps = 1 / (now - self.prev_frame_time) if self.prev_frame_time > 0 else 0
-                self.prev_frame_time = now
-
-                self.logger.log_frame(
-                    state=final, total_score=total, geo_score=s_geo, cnn_score=s_cnn,
-                    temp=self.current_temp, fps=fps,
-                    eyes=geo_res.get("txt_eyes","Neutre"),
-                    brows=geo_res.get("txt_brows","Stable"),
-                    mouth=geo_res.get("txt_mouth","Fermee")
-                )
-                self.maybe_trigger_vlm(img_rgb, bbox)
-
-        annotated = self._draw_overlay(frame_bgr.copy(), bbox)
-        state     = self.hud_data["global_state"]
-        primary_emotion = (
-            "confortable"   if state == "CONFORT"   else
-            "inconfortable" if state == "INCONFORT" else
-            "neutre"
+        return ComfortResult(
+            label=label,
+            direction=direction,
+            score=round(score, 2),
+            confidence=round(confidence, 2),
+            action=action,
+            temperatures={k: round(v.mean, 2) for k, v in zs.items()} if False else {},
+            features={k: round(v, 2) for k, v in feats.items()},
+            notes=notes,
         )
-        return annotated, cnn_res["label"], primary_emotion, self.current_temp
 
-    def _draw_calibration(self, frame: np.ndarray, progress: int) -> np.ndarray:
-        h, w = frame.shape[:2]
-        overlay = frame.copy()
-        cv2.rectangle(overlay, (0, 0), (w, h), (0, 0, 0), -1)
-        cv2.addWeighted(overlay, 0.6, frame, 0.4, 0, frame)
-        pct   = int((progress / self.CALIB_FRAMES) * 100)
-        bar_w = int(w * 0.5)
-        bar_x = (w - bar_w) // 2
-        bar_y = h // 2 + 30
-        cv2.putText(frame, "CALIBRATION EN COURS",
-                    (bar_x, h // 2 - 15), cv2.FONT_HERSHEY_DUPLEX, 0.8, (255,255,255), 1, cv2.LINE_AA)
-        cv2.putText(frame, "Restez neutre face a la camera",
-                    (bar_x, h // 2 + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (180,180,180), 1, cv2.LINE_AA)
-        cv2.rectangle(frame, (bar_x, bar_y), (bar_x + bar_w, bar_y + 10), (60,60,60), -1)
-        cv2.rectangle(frame, (bar_x, bar_y), (bar_x + int(bar_w * pct / 100), bar_y + 10), C_WARN, -1)
-        cv2.putText(frame, f"{pct}%", (bar_x + bar_w + 8, bar_y + 10),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.45, C_WARN, 1)
-        return frame
+    # ------------------------------
+    # End-to-end one frame
+    # ------------------------------
+    def analyze_frame(self, img_bgr: np.ndarray):
+        thermal = self.thermal_to_celsius(img_bgr)
+        landmarks = self.detect_landmarks(img_bgr)
+        if landmarks is None:
+            raise RuntimeError("Visage non détecté sur l'image thermique.")
+        rois = self.build_rois(img_bgr.shape, landmarks)
+        stats = self.extract_zone_stats(thermal, rois)
+        feats = self.build_features(stats)
+        result = self.classify(feats)
+        result.temperatures = {k: round(v.mean, 2) for k, v in stats.items() if v.n > 0}
+        return thermal, landmarks, rois, stats, result
 
-    def _draw_overlay(self, frame: np.ndarray, bbox) -> np.ndarray:
-        state = self.hud_data["global_state"]
-        geo   = self.hud_data["geo_details"]
-        col   = C_NEUTRAL
-        if state == "CONFORT":     col = C_OK
-        elif state == "INCONFORT": col = C_ALERT
-        if bbox is None:
-            return frame
-        x1, y1, x2, y2 = bbox
-        cv2.rectangle(frame, (x1, y1), (x2, y2), col, 2)
-        if geo and "landmarks" in geo:
-            lms = geo["landmarks"]
-            for idx in [33, 133, 362, 263, 61, 291, 105, 334, 468, 473]:
-                if idx < len(lms):
-                    cv2.circle(frame, (int(lms[idx][0]), int(lms[idx][1])), 2, (255,255,255), -1)
-        return frame
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# FASTAPI
-# ─────────────────────────────────────────────────────────────────────────────
-
-app = FastAPI(title="Stellantis CARE Monitor API", version="1.0.0")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-engine = StellantisAPIEngine()
-
-
-class FrameRequest(BaseModel):
-    frame:       str
-    temperature: Optional[float] = None
-
-class VLMResponseRequest(BaseModel):
-    response: str
-
-
-def decode_frame(data_url: str) -> Optional[np.ndarray]:
-    try:
-        if "," in data_url:
-            data_url = data_url.split(",")[1]
-        img_bytes = base64.b64decode(data_url)
-        arr = np.frombuffer(img_bytes, dtype=np.uint8)
-        return cv2.imdecode(arr, cv2.IMREAD_COLOR)
-    except Exception as e:
-        print(f"[decode_frame] Erreur : {e}")
-        return None
-
-def encode_frame(frame: np.ndarray) -> str:
-    _, buf = cv2.imencode(".jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, 80])
-    return f"data:image/jpeg;base64,{base64.b64encode(buf).decode('utf-8')}"
-
-
-@app.post("/analyze")
-async def analyze(req: FrameRequest):
-    frame = decode_frame(req.frame)
-    if frame is None:
-        return {"error": "Frame invalide", "emotion": "", "primary_emotion": "",
-                "annotated_image": None, "temperature": engine.current_temp}
-
-    annotated, emotion, primary_emotion, temperature = engine.process_frame(frame)
-
-    # Détails FACS pour le dashboard React
-    geo = engine.hud_data.get("geo_details", {})
-    cnn = engine.hud_data.get("cnn_details", {})
-    return {
-        "emotion":         emotion,
-        "primary_emotion": primary_emotion,
-        "annotated_image": encode_frame(annotated),
-        "temperature":     round(temperature, 1),
-        "state":           engine.hud_data["global_state"],
-        "stats":           engine.stats_percentages,
-        "climate_mode":    engine.climate_mode,
-        "facs": {
-            "eyes":  geo.get("txt_eyes",  "—"),
-            "brows": geo.get("txt_brows", "—"),
-            "mouth": geo.get("txt_mouth", "—"),
-        },
-        "scores": {
-            "geo":   round(engine.score_history[-1] if engine.score_history else 0, 1),
-            "cnn":   round(cnn.get("score", 0) * (1 if cnn.get("label") == "happy" else -1), 1),
-            "total": round(sum(engine.score_history[-10:]) / max(1, len(engine.score_history[-10:])), 1),
+    def draw(self, img_bgr: np.ndarray, rois: Dict[str, np.ndarray], result: ComfortResult) -> np.ndarray:
+        vis = img_bgr.copy()
+        color_map = {
+            "forehead": (255, 200, 80),
+            "nose": (80, 180, 255),
+            "chin": (220, 140, 255),
+            "cheek_left": (100, 255, 100),
+            "cheek_right": (100, 255, 100),
+            "inner_canthus_left": (255, 255, 255),
+            "inner_canthus_right": (255, 255, 255),
+            "nose_tip": (0, 220, 255),
         }
-    }
+        for name, poly in rois.items():
+            c = color_map.get(name, (200, 200, 200))
+            overlay = vis.copy()
+            cv2.fillConvexPoly(overlay, poly, c)
+            vis = cv2.addWeighted(overlay, 0.22, vis, 0.78, 0)
+            cv2.polylines(vis, [poly], True, c, 1, cv2.LINE_AA)
+
+        h, w = vis.shape[:2]
+        band = (40, 180, 40) if result.label == "CONFORT" else ((30, 30, 230) if result.label == "INCONFORT" else (180, 180, 40))
+        cv2.rectangle(vis, (0, 0), (w, 58), (20, 20, 20), -1)
+        cv2.putText(vis, f"{result.label} | score {result.score:+.2f} | conf {result.confidence:.2f}", (10, 22), cv2.FONT_HERSHEY_SIMPLEX, 0.62, band, 2, cv2.LINE_AA)
+        cv2.putText(vis, f"Direction: {result.direction} | {result.action}", (10, 45), cv2.FONT_HERSHEY_SIMPLEX, 0.42, (220, 220, 220), 1, cv2.LINE_AA)
+        return vis
 
 
-@app.get("/vlm/check")
-async def vlm_check():
-    return {"question": engine.vlm_question}
+def demo(image_path: str, temp_min: float = 18.0, temp_max: float = 36.2, save_path: Optional[str] = None):
+    analyzer = ThermalFaceAnalyzer(temp_min=temp_min, temp_max=temp_max)
+    img = analyzer.load_image(image_path)
+    thermal, landmarks, rois, stats, result = analyzer.analyze_frame(img)
+    vis = analyzer.draw(img, rois, result)
 
+    if save_path is None:
+        root, ext = os.path.splitext(image_path)
+        save_path = root + "_v2_analysis.jpg"
+    cv2.imwrite(save_path, vis)
 
-@app.post("/vlm/response")
-async def vlm_response(req: VLMResponseRequest):
-    r = req.response.lower().strip()
-    if r == "oui":
-        engine.target_temp  = max(16.0, engine.current_temp - 2.0)
-        engine.climate_mode = "AJUSTEMENT"
-    elif r == "non":
-        engine.target_temp  = min(26.0, engine.current_temp + 1.0)
-        engine.climate_mode = "AUTO"
-        engine.score_history.clear()
-    engine.vlm_question = None
-    return {"status": "ok", "new_target": round(engine.target_temp, 1)}
-
-
-@app.get("/health")
-async def health():
-    return {
-        "status":       "ok",
-        "engine_state": engine.state,
-        "temperature":  round(engine.current_temp, 1),
-        "climate_mode": engine.climate_mode,
-    }
+    print("\n=== THERMAL COMFORT RESULT ===")
+    print(result.label, result.direction, result.score, result.confidence)
+    print("Action:", result.action)
+    print("Temperatures:")
+    for k, v in result.temperatures.items():
+        print(f"  - {k}: {v:.2f}°C")
+    print("Features:")
+    for k, v in result.features.items():
+        print(f"  - {k}: {v:.2f}")
+    print("Notes:")
+    for n in result.notes:
+        print("  -", n)
+    print("Saved:", save_path)
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000, reload=False)
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Thermal comfort facial analyzer V2")
+    parser.add_argument("image", help="Chemin vers l'image thermique")
+    parser.add_argument("--temp-min", type=float, default=18.0, help="Température min palette")
+    parser.add_argument("--temp-max", type=float, default=36.2, help="Température max palette")
+    parser.add_argument("--output", type=str, default=None, help="Chemin de sortie image annotée")
+    args = parser.parse_args()
+
+    demo(
+        image_path=args.image,
+        temp_min=args.temp_min,
+        temp_max=args.temp_max,
+        save_path=args.output,
+    )
